@@ -1,0 +1,31 @@
+# permissions for end users to edit hxzdeployments.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: hxzdeployment-editor-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: huangxinzhong-deployment
+    app.kubernetes.io/part-of: huangxinzhong-deployment
+    app.kubernetes.io/managed-by: kustomize
+  name: hxzdeployment-editor-role
+rules:
+- apiGroups:
+  - apps.huangxinzhong.com
+  resources:
+  - hxzdeployments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps.huangxinzhong.com
+  resources:
+  - hxzdeployments/status
+  verbs:
+  - get
