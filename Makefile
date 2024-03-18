@@ -58,6 +58,10 @@ vet: ## Run go vet against code.
 test: manifests generate fmt vet envtest ## Run tests.
 	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -coverprofile cover.out
 
+.PHONY:
+e2e-test:
+	cd test/e2e && go test -tags=e2e --startup-timeout 3600 --config config.yaml ./...
+
 ##@ Build
 
 .PHONY: build
@@ -72,8 +76,12 @@ run: manifests generate fmt vet ## Run a controller from your host.
 # (i.e. docker build --platform linux/arm64 ). However, you must enable docker buildKit for it.
 # More info: https://docs.docker.com/develop/develop-images/build_enhancements/
 .PHONY: docker-build
-docker-build: test ## Build docker image with the manager.
+docker-build: ## test ## Build docker image with the manager.
 	docker build -t ${IMG} .
+
+.PHONY: docker-load
+docker-load:
+	kind load docker-image ${IMG} --name e2e
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
@@ -155,3 +163,11 @@ $(CONTROLLER_GEN): $(LOCALBIN)
 envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
 $(ENVTEST): $(LOCALBIN)
 	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+
+.PHONY: wait-dep
+wait-dep:
+	kubectl -n ingress-nginx rollout status deploy/ingress-nginx-controller -w --timeout=40m
+
+.PHONY: wait-deploy
+wait-deploy:
+	kubectl -n huangxinzhong-deployment-system rollout status deploy/huangxinzhong-deployment-controller-manager -w --timeout=40m

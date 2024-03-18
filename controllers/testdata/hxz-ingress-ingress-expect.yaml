@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hxzdeployment-test
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: www.huangxinzhong-test.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/bar"
+            backend:
+              service:
+                name: hxzdeployment-test
+                port:
+                  number: 80

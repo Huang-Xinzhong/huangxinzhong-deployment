@@ -1,0 +1,13 @@
+apiVersion: apps.huangxinzhong.com/v1
+kind: HxzDeployment
+metadata:
+  labels:
+  name: hxzdeployment-test
+spec:
+  image: nginx
+  port: 80
+  replicas: 2
+  expose:
+    mode: ingress
+    ingressDomain: www.huangxinzhong-test.com
+

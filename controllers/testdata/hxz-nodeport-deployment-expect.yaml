@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hxzdeployment-test
+  labels:
+    app: hxzdeployment-test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: hxzdeployment-test
+  template:
+    metadata:
+      labels:
+        app: hxzdeployment-test
+    spec:
+      containers:
+        - name: hxzdeployment-test
+          image: nginx
+          ports:
+            - containerPort: 80

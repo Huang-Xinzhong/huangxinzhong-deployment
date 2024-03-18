@@ -1,0 +1,18 @@
+package e2e
+
+import (
+	"os"
+	"os/exec"
+	"testing"
+)
+
+func TestInstall(t *testing.T) {
+	args := []string{"apply", "-f", "deploy.yaml"}
+	cmd := exec.Command("kubectl", args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	t.Errorf("cmd = " + cmd.String())
+	if err := cmd.Run(); err != nil {
+		t.Errorf(err.Error())
+	}
+}

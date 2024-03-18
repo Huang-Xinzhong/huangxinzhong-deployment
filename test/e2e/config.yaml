@@ -1,0 +1,94 @@
+cluster:
+  kind:
+    name: e2e
+    retain: true
+    config: |
+      kind: Cluster
+      apiVersion: kind.x-k8s.io/v1alpha4
+      containerdConfigPatches:
+        - |-
+          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:5001"]
+            endpoint = ["http://kind-registry:5000"]
+      nodes:
+      - role: control-plane
+        kubeadmConfigPatches:
+        - |
+          kind: InitConfiguration 
+          nodeRegistration: 
+            kubeletExtraArgs: 
+              node-labels: "ingress-ready=true"
+        extraPortMappings:
+        - containerPort: 30001
+          hostPort: 30001
+          protocol: TCP
+        - containerPort: 80
+          hostPort: 80
+          protocol: TCP
+        - containerPort: 443
+          hostPort: 443
+          protocol: TCP
+install:
+  steps:
+    - name: set-registry
+      cmd: kubectl
+      args:
+        - apply
+        - -f
+        - ./test/e2e/yamls/local-registry-cm.yaml
+      path: ../..
+      ignoreFail: false
+    - name: ingress-controller
+      cmd: kubectl
+      args:
+        - apply
+        - -f
+        - ./test/e2e/yamls/deploy.yaml
+      path: ../../
+      ignoreFail: false
+    - name: wait-dep
+      cmd: make
+      args:
+        - wait-dep
+      path: ../..
+      ignoreFail: false
+    - name: docker-build
+      cmd: make
+      args:
+        - docker-build
+        - IMG=huangxinzhong.com/deployment/huangxinzhong:v0.0.1
+      path: ../..
+      ignoreFail: false
+    - name: docker -load
+      cmd: make
+      args:
+        - docker-load
+        - IMG=huangxinzhong.com/deployment/huangxinzhong:v0.0.1
+      path: ../..
+      ignoreFail: false
+    - name: install-crd
+      cmd: make
+      args:
+        - install
+      path: ../..
+      ignoreFail: false
+    - name: deploy
+      cmd:  make
+      args:
+        - deploy
+        - IMG=huangxinzhong.com/deployment/huangxinzhong:v0.0.1
+      path: ../..
+      ignoreFail: false
+    - name: wait-deploy
+      cmd: make
+      args:
+        - wait-deploy
+      path: ../..
+      ignoreFail: false
+    - name: check
+      cmd: kubectl
+      args:
+        - get
+        - pod
+        - -A
+      path: ../..
+      ignoreFail: false
