@@ -1,11 +1,12 @@
 apiVersion: apps.huangxinzhong.com/v1
 kind: HxzDeployment
 metadata:
-  name: update-nodeport
+  name: create-ingress-with-tls
 spec:
   image: nginx
   port: 80
   replicas: 2
   expose:
-    mode: nodeport
-    nodePort: 30000
+    mode: ingress
+    ingressDomain: www.huangxinzhong-test-t.com
+    tls: true

@@ -45,6 +45,14 @@ install:
         - ./test/e2e/yamls/deploy.yaml
       path: ../../
       ignoreFail: false
+    - name: cert-manager-controller
+      cmd: kubectl
+      args:
+        - apply
+        - -f
+        - ./test/e2e/yamls/cert-manager.yaml
+      path: ../..
+      ignoreFail: false
     - name: wait-dep
       cmd: make
       args:

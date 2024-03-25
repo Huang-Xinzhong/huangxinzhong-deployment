@@ -1,11 +1,10 @@
 apiVersion: apps.huangxinzhong.com/v1
 kind: HxzDeployment
 metadata:
-  name: update-nodeport
+  name: create-nodeport-error-no-nodeport
 spec:
   image: nginx
   port: 80
   replicas: 2
   expose:
     mode: nodeport
-    nodePort: 30000
